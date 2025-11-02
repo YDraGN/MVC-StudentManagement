@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Cập nhật sinh viên</title>
+     <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+     <?php
+     if (!isset($_SESSION)) 
+          session_start();
+     ?>
+     <?php include 'components/header.phtml'; ?>
+     
+     <main class="main-content">
+          <div class="container">
+               <h2 class="page-title">Cập nhật thông tin sinh viên</h2>
+               
+               <?php if(isset($_SESSION['update_status'])):?>
+                    <div class="<?php echo $_SESSION['update_status'] === 'success' ? 'alert alert-success' : 'alert alert-error'; ?>">
+                         <?php if($_SESSION['update_status'] === "success"):?>
+                              <p>Cập nhật thông tin sinh viên thành công</p>
+                              <p>Bạn có muốn xem danh sách sinh viên mới?</p>
+                              <form action="../Controller/C_Student.php" method="GET" style="margin-top: 1rem;">
+                                   <button type="submit" class="btn btn-primary">Xem danh sách</button>
+                              </form>
+                         <?php else:?>
+                              <?php if(isset($_SESSION['error'])): ?>
+                                   <p><?=htmlspecialchars($_SESSION['error']['type'])?> : <?=htmlspecialchars($_SESSION['error']['message'])?></p>
+                                   <?php unset($_SESSION['error']); ?>
+                              <?php else: ?>
+                                   <p>Không thể cập nhật thông tin sinh viên. Vui lòng thử lại.</p>
+                              <?php endif; ?>
+                         <?php endif;?>
+                    </div>
+               <?php unset($_SESSION['update_status']); endif;?>
+               <?php if (!isset($student) || $student === null): ?>
+                    <div class="alert alert-error">
+                    Không tìm thấy thông tin sinh viên. <a href="../Controller/C_Student.php">Quay lại danh sách</a>
+                    </div>
+               <?php else: ?>
+               
+               <form action="../Controller/C_Student.php" method="POST" onsubmit="return validateForm()">
+                    <div class="form-group">
+                         <label for="id">ID</label>
+                         <input type="text" name="id" id="id" value="<?=isset($student) && isset($student->id) ? htmlspecialchars($student->id) : ''?>" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                         <label for="name">Họ và tên</label>
+                         <input type="text" name="name" id="name" value="<?=isset($student) && isset($student->name) ? htmlspecialchars($student->name) : ''?>" onblur="validateField(this,'name')">
+                         <label for="" id="nameError" class="error-message" style="visibility: hidden;"></label>
+                    </div>
+                    
+                    <div class="form-group">
+                         <label for="age">Tuổi</label>
+                         <input type="text" name="age" id="age" value="<?=isset($student) && isset($student->age) ? htmlspecialchars($student->age) : ''?>" onblur="validateField(this,'age')">
+                         <label for="" id="ageError" class="error-message" style="visibility: hidden;"></label>
+                    </div>
+                    
+                    <div class="form-group">
+                         <label for="university">Trường</label>
+                         <input type="text" name="university" id="university" value="<?=isset($student) && isset($student->university) ? htmlspecialchars($student->university) : ''?>" onblur="validateField(this,'university')">
+                         <label for="" id="universityError" class="error-message" style="visibility: hidden;"></label>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                         <button type="button" id="updateBtn" class="btn btn-primary">Cập nhật</button>
+                         <button type="reset" name="reset" value="Reset" onclick="resetFormErrors()" class="btn btn-secondary">Đặt lại</button>
+                         <a href="javascript:history.back()" class="btn btn-secondary">Quay lại</a>
+                         <a href="../index.php" class="btn btn-secondary">Trang chủ</a>
+                    </div>
+               </form>
+
+               <div id="confirmModal" class="modal">
+                    <div class="modal-content">
+                         <h3>Xác nhận cập nhật</h3>
+                         <div id="confirmContent" style="margin:10px 0; color:#333;">
+                         
+                         </div>
+                         <div class="modal-footer">
+                              <button type="button" id="confirmCancel" class="btn btn-secondary">Hủy</button>
+                              <button type="button" id="confirmOk" class="btn btn-primary">Xác nhận</button>
+                         </div>
+                    </div>
+               </div>
+               <?php endif; ?>
+          </div>
+     </main>
+     
+     <?php include 'components/footer.phtml'; ?>
+<script>
+     function resetFormErrors() {
+          var fieldName = ['name', 'age', 'university'];
+          for (const field of fieldName) {
+               document.getElementById(field).classList.remove('is-invalid');
+               document.getElementById(field+"Error").style.visibility = "hidden";
+          }
+          return true;
+     }
+
+     const validationRules = {
+          name: {
+               regex: /^[^\t\n\r\f\v@#\$%\^&\*+=\[\]\{\}<>]+$/, 
+               errorMessage: "Tên không hợp lệ. Vui lòng không sử dụng ký tự đặc biệt."
+          },
+          age: {
+               regex: /^\d{1,3}$/, 
+               errorMessage: "Tuổi không hợp lệ (tổi đa 3 chữ số)."
+          },
+          university: {
+               regex: /^[^\t\n\r\f\v@#\$%\^&\*+=\[\]\{\}<>]+$/, 
+               errorMessage: "Tên trường không hợp lệ. Vui lòng không sử dụng ký tự đặc biệt."
+          }
+     };
+
+     function validateField(inputElement, fieldName) {
+          var value = inputElement.value.trim();
+          const errorDisplay = document.getElementById(fieldName + "Error");
+          const rule = validationRules[fieldName];
+          let isValid = true;
+          let message = "";
+
+          if (value === "") {
+               isValid = false;
+               message = "Vui lòng điền " + fieldName;
+          } else if (rule && rule.regex && !rule.regex.test(value)) {
+               isValid = false;
+               message = rule.errorMessage;
+          } else if (fieldName === 'age') {
+               const ageValue = parseInt(value, 10);
+               const minAge = 16;
+               const maxAge = 150;
+
+               if (isNaN(ageValue) || ageValue < minAge || ageValue > maxAge) {
+                    isValid = false;
+                    message = `Tuổi phải nằm trong khoảng từ ${minAge} đến ${maxAge}.`;
+               }
+          }
+
+          if (!isValid) {
+               errorDisplay.style.visibility = "visible";
+               errorDisplay.textContent = message;
+               errorDisplay.style.color = 'red';
+               inputElement.classList.add('is-invalid');
+          } else {
+               errorDisplay.style.visibility = "hidden";
+               inputElement.classList.remove('is-invalid');
+          }
+
+          return isValid;
+     }
+
+     function validateForm() {
+          const fields = ['name', 'age', 'university']; 
+          let isFormValid = true;
+
+          for (const fieldName of fields) {
+               const inputElement = document.getElementById(fieldName);
+               if (!validateField(inputElement, fieldName)) {
+                    isFormValid = false;
+               }
+          }
+
+          if (!isFormValid) {
+               alert("Vui lòng sửa các lỗi trước khi gửi Form.");
+          }
+          return isFormValid;
+     }
+
+     document.addEventListener('DOMContentLoaded', function () {
+          var updateBtn = document.getElementById('updateBtn');
+          var modal = document.getElementById('confirmModal');
+          var confirmOk = document.getElementById('confirmOk');
+          var confirmCancel = document.getElementById('confirmCancel');
+          var confirmContent = document.getElementById('confirmContent');
+          var form = document.querySelector('form'); // this update form
+
+          updateBtn.addEventListener('click', function (e) {
+               // run client-side validation first
+               if (typeof validateForm === 'function') {
+                    if (!validateForm()) return; // keep modal closed on invalid
+               }
+
+               // fill modal content with summary (escape minimal)
+               var id = document.getElementById('id').value || '';
+               var name = document.getElementById('name').value || '';
+               var age = document.getElementById('age').value || '';
+               var university = document.getElementById('university').value || '';
+
+               confirmContent.innerHTML =
+                    '<p>Bạn sắp cập nhật sinh viên với thông tin sau:</p>' +
+                    '<ul style="margin:10px 0 0 20px; padding:0;">' +
+                    '<li><strong>ID:</strong> ' + escapeHtml(id) + '</li>' +
+                    '<li><strong>Họ và tên:</strong> ' + escapeHtml(name) + '</li>' +
+                    '<li><strong>Tuổi:</strong> ' + escapeHtml(age) + '</li>' +
+                    '<li><strong>Trường:</strong> ' + escapeHtml(university) + '</li>' +
+                    '</ul>';
+
+               modal.classList.add('active');
+               document.body.style.overflow = 'hidden';
+          });
+
+          confirmCancel.addEventListener('click', function () {
+               modal.classList.remove('active');
+               document.body.style.overflow = '';
+          });
+
+          confirmOk.addEventListener('click', function () {
+               modal.classList.remove('active');
+               document.body.style.overflow = '';
+               if (!document.querySelector('input[name="update"]')) {
+                    var hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'update';
+                    hidden.value = '1';
+                    form.appendChild(hidden);
+               }
+               form.submit();
+          });
+          
+          // Close modal when clicking outside
+          document.addEventListener('click', function(event) {
+               if (event.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+               }
+          });
+
+          function escapeHtml(s) {
+               return String(s).replace(/[&<>"']/g, function (m) {
+                    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+               });
+          }
+     });
+</script>
+</html>

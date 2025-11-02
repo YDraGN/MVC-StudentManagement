@@ -1,0 +1,25 @@
+<header class="header">
+    <div class="header-content">
+        <a href="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../index.php' : 'index.php'; ?>" class="logo">
+            🎓 Quản lý sinh viên
+        </a>
+        <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+        <nav class="nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../Controller/C_Student.php' : 'Controller/C_Student.php'; ?>" class="nav-link">Danh sách</a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../Controller/C_Student.php?mod1=1' : 'Controller/C_Student.php?mod1=1'; ?>" class="nav-link">Thêm mới</a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../Controller/C_Student.php?mod2=1' : 'Controller/C_Student.php?mod2=1'; ?>" class="nav-link">Cập nhật</a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../Controller/C_Student.php?mod4=1' : 'Controller/C_Student.php?mod4=1'; ?>" class="nav-link">Tìm kiếm</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+

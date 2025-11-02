@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Chi tiết sinh viên</title>
+     <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+     <?php
+     if (!isset($_SESSION)) 
+          session_start();
+     ?>
+     <?php include 'components/header.phtml'; ?>
+     
+     <main class="main-content">
+          <div class="container">
+               <h2 class="page-title">Chi tiết sinh viên</h2>
+               
+               <?php if (!isset($student) || $student === null): ?>
+                    <div class="alert alert-error">
+                         Không tìm thấy thông tin sinh viên. <a href="../Controller/C_Student.php">Quay lại danh sách</a>
+                    </div>
+               <?php else: ?>
+               
+               <form style="max-width: 600px;">
+                    <div class="form-group">
+                         <label for="id">ID</label>
+                         <input type="text" name="id" id="id" value="<?=isset($student) ? htmlspecialchars($student->id) : ''?>" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                         <label for="name">Họ và tên</label>
+                         <input type="text" name="name" id="name" value="<?=isset($student) && isset($student->name) ? htmlspecialchars($student->name) : ''?>" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                         <label for="age">Tuổi</label>
+                         <input type="text" name="age" id="age" value="<?=isset($student) && isset($student->age) ? htmlspecialchars($student->age) : ''?>" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                         <label for="university">Trường</label>
+                         <input type="text" name="university" id="university" value="<?=isset($student) && isset($student->university) ? htmlspecialchars($student->university) : ''?>" readonly>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                         <a href="javascript:history.back()" class="btn btn-secondary">Quay lại</a>
+                         <a href="../Controller/C_Student.php?id=<?=isset($student) && isset($student->id) ? htmlspecialchars($student->id) : ''?>&&action=2" class="btn btn-primary">Cập nhật</a>
+                         <a href="../index.php" class="btn btn-secondary">Trang chủ</a>
+                    </div>
+               </form>
+               <?php endif; ?>
+          </div>
+     </main>
+     
+     <?php include 'components/footer.phtml'; ?>
+</body>
+</html>

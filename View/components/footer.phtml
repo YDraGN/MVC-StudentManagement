@@ -1,0 +1,13 @@
+<footer class="footer">
+    <div class="footer-content">
+        <p>&copy; <?php echo date('Y'); ?> Hệ thống Quản lý Sinh viên</p>
+        <p>Nguyễn Thị Bảo Ngân - MSSV: 102230255 - Lớp: 23T_DT2</p>
+        
+        <div class="footer-links">
+            <a href="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../index.php' : 'index.php'; ?>">Trang chủ</a>
+            <a href="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../Controller/C_Student.php' : 'Controller/C_Student.php'; ?>">Danh sách sinh viên</a>
+        </div>
+    </div>
+</footer>
+<script src="<?php echo (strpos($_SERVER['PHP_SELF'], '/View/') !== false || strpos($_SERVER['PHP_SELF'], '/Controller/') !== false) ? '../assets/js/main.js' : 'assets/js/main.js'; ?>"></script>
+
